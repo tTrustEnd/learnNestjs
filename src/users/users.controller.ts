@@ -8,12 +8,10 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
   @Post()
-  create(
-    @Body('email') email: string,
-    @Body('password') password: string,
-    @Body('name') name: string,
-  ) {
-    return this.usersService.create(email, password, name);
+ 
+  create(@Body() User:CreateUserDto) {
+    
+    return this.usersService.create(User);
   }
 
   @Get()
@@ -23,7 +21,7 @@ export class UsersController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+    return this.usersService.findOne(id);
   }
 
   @Patch(':id')
