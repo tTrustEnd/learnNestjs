@@ -10,11 +10,11 @@ export class StatelessService {
     ) { }
 
     async validateUserStateless(username: string, pass: string): Promise<any> {
-        const user = await this.usersService.findByEmail(username);
+        const user = await this.usersService.findOneByUsername(username);
         if (!user) {
             return null;
         }
-        const isValidPassword = this.usersService.checkPassword(pass, user.password);
+        const isValidPassword = this.usersService.isValidPassword(pass, user.password);
         if (!isValidPassword) {
             throw new UnauthorizedException();
         }

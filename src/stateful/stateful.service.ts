@@ -7,11 +7,11 @@ export class StatefulService {
 
     async validateUserStateful(username: string, password: string) {
 
-        const user = await this.usersService.findByEmail(username);
+        const user = await this.usersService.findOneByUsername(username);
         if (!user) {
             throw new NotAcceptableException(`could not find the user with username = ${username}`);
         }
-        const passwordValid = this.usersService.checkPassword(password, user.password)
+        const passwordValid = this.usersService.isValidPassword(password, user.password)
         if (!passwordValid) {
             throw new NotAcceptableException('wrong password');
         }

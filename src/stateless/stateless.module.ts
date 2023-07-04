@@ -13,7 +13,7 @@ import ms from 'ms';
   controllers: [StatelessController],
   providers: [StatelessService, LocalStrategy, JwtStrategy],
   imports: [UsersModule,
-    PassportModule,
+  PassportModule,
     // JwtModule.({
     //   secret: jwtConstants.secret,
     //   signOptions: { expiresIn: '60s' },
