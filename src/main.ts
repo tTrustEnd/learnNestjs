@@ -14,8 +14,10 @@ async function bootstrap() {
   app.setViewEngine('ejs');
 
   app.useGlobalPipes(new ValidationPipe());
-  // const reflector = app.get(Reflector)
-  // app.useGlobalGuards(new JwtAuthGuard(reflector))
+
+  const reflector = app.get(Reflector)
+  app.useGlobalGuards(new JwtAuthGuard(reflector))
+  
   app.enableCors({
     "origin": "*",
     "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",

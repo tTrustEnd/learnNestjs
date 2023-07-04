@@ -30,7 +30,7 @@ import { CompaniesModule } from './companies/companies.module';
 
     UsersModule,
     StatelessModule,
-    CompaniesModule
+    CompaniesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

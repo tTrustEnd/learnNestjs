@@ -21,13 +21,13 @@ export class UsersService {
     return hash;
   }
 
-  async create(hoidanit: CreateUserDto) {
-    const hashPassword = this.getHashPassword(hoidanit.password);
+  async create(req: CreateUserDto) {
+    const hashPassword = this.getHashPassword(req.password);
 
     let user = await this.userModel.create({
-      email: hoidanit.email,
+      email: req.email,
       password: hashPassword,
-      name: hoidanit.name
+      name: req.name
     })
     return user;
   }

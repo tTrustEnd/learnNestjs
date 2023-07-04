@@ -9,9 +9,11 @@ import { ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './passport/stateless.jwt.strategy';
 
 import ms from 'ms';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './passport/stateless.jwt.auth.guard';
 @Module({
   controllers: [StatelessController],
-  providers: [StatelessService, LocalStrategy, JwtStrategy],
+  providers: [StatelessService, LocalStrategy, JwtStrategy,],
   imports: [UsersModule,
   PassportModule,
     // JwtModule.({
