@@ -10,19 +10,17 @@ export class AppController {
 
   ) { }
   @Get()
+  // @Render('home')
   handleHomePage() {
-    //port from .envsss
-    console.log(">> check port = ", this.configService.get<string>("PORT"))
     const message1 = this.appService.getHello();
-
     return {
       message: message1
     }
   }
 
 
-  @Get("abc") /// route " "  /
+  @Get("abc")
   getHello1(): string {
-    return "this.appService.getHello() abc";
+    return this.appService.getHello();
   }
 }
