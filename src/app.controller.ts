@@ -11,7 +11,7 @@ export class AppController {
   ) { }
   @Get()
   handleHomePage() {
-    //port from .env
+    //port from .envsss
     console.log(">> check port = ", this.configService.get<string>("PORT"))
     const message1 = this.appService.getHello();
 
