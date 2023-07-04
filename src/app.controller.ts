@@ -10,7 +10,6 @@ export class AppController {
 
   ) { }
   @Get()
-  @Render('home') /// route " "  /=> api (restful)
   handleHomePage() {
     //port from .env
     console.log(">> check port = ", this.configService.get<string>("PORT"))
