@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsNotEmpty, isNotEmpty } from 'class-validator';
 
 //data transfer object // class = { }
 export class CreateCompanyDto {
@@ -10,4 +10,6 @@ export class CreateCompanyDto {
 
     @IsNotEmpty({ message: 'Description không được để trống', })
     description: string;
+
+
 }

@@ -2,7 +2,7 @@ import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 import { LocalAuthGuard } from './passport/stateless.local.guard';
 import { StatelessService } from './stateless.service';
 import { JwtAuthGuard } from './passport/stateless.jwt.auth.guard';
-import { Public } from './passport/metadata';
+import { Public } from 'decorator/customize';
 
 @Controller('stateless')
 export class StatelessController {

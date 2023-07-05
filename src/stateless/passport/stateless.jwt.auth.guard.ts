@@ -1,6 +1,6 @@
 import { ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { IS_PUBLIC_KEY } from './metadata';
+import { IS_PUBLIC_KEY } from 'decorator/customize'; 
 import { Reflector } from '@nestjs/core';
 
 @Injectable()
@@ -24,7 +24,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     handleRequest(err, user, info) {
         // You can throw an exception based on either "info" or "err" arguments
         if (err || !user) {
-            throw err || new UnauthorizedException("Need a jwt token in header");
+            throw err || new UnauthorizedException("Token không hợp lệ hoặc không có bearer token");
         }
         return user;
     }

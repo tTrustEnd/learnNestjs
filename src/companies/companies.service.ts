@@ -1,9 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Delete } from '@nestjs/common';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Company, CompanyDocument } from './schemas/company.schema';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
+import { IUser } from '@/users/user.interface';
+import { query } from 'express';
+import aqp from 'api-query-params';
 
 @Injectable()
 export class CompaniesService {
@@ -12,23 +15,52 @@ export class CompaniesService {
     private companyModel: SoftDeleteModel<CompanyDocument>
   ) { }
 
-  create(createCompanyDto: CreateCompanyDto) {
-    return this.companyModel.create({...createCompanyDto});
+  create(createCompanyDto: CreateCompanyDto, user: IUser) {
+    return this.companyModel.create({
+      ...createCompanyDto,
+      createdBy: {
+        _id: user._id,
+        email: user.email
+      }
+    });
   }
-
-  findAll() {
-    return `This action returns all companies`;
+ async findAll(query) {
+    let total = (await this.companyModel.find({})).length
+    let { limit, filter} = aqp(query)
+    delete filter.page
+    let offset = (query.page - 1) * limit
+    let result = await this.companyModel.find(filter).limit(limit).skip(offset).sort(query.sort);
+    return {
+      meta: {
+        current: query.page,
+        pageSize:limit,
+        pages:Math.ceil(total/limit),
+        total:total
+      },
+      result:result
+    }
   }
 
   findOne(id: number) {
     return `This action returns a #${id} company`;
   }
 
-  update(id: number, updateCompanyDto: UpdateCompanyDto) {
-    return `This action updates a #${id} company`;
+  async update(id: string, updateCompanyDto: UpdateCompanyDto, user: IUser) {
+    return await this.companyModel.updateOne({ _id: id }, {
+      ...updateCompanyDto, updatedBy: {
+        _id: user._id,
+        email: user.email
+      }
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} company`;
+  async remove(id: string, user: IUser) {
+    await this.companyModel.updateOne({ _id: id }, {
+      deletedBy: {
+        _id: user._id,
+        email: user.email
+      }
+    })
+    return await this.companyModel.softDelete({ _id: id });
   }
 }
