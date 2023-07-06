@@ -24,7 +24,7 @@ export class CompaniesService {
       }
     });
   }
- async findAll(query) {
+ async findAll(query:any) {
     let total = (await this.companyModel.find({})).length
     let { limit, filter} = aqp(query)
     delete filter.page
@@ -33,7 +33,7 @@ export class CompaniesService {
     return {
       meta: {
         current: query.page,
-        pageSize:limit,
+        pageSize:result.length,
         pages:Math.ceil(total/limit),
         total:total
       },

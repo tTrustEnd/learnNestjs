@@ -1,41 +1,44 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto, RegisterUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '@/stateless/passport/stateless.jwt.auth.guard';
+import { Public, RESPONSEMESSAGE, User } from 'decorator/customize';
+import { IUser } from './user.interface';
 
 @Controller('users') // => /users
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
-  
-  @UseGuards(JwtAuthGuard)
+
+  @Public()
   @Post()
-  create(@Body() hoidanit: CreateUserDto) {
-    return this.usersService.create(hoidanit);
+  @RESPONSEMESSAGE("create a user")
+  create(@Body() user: CreateUserDto) {
+    return this.usersService.create(user);
   }
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  @RESPONSEMESSAGE("get user with paginate")
+  findAll(@Query() query:string) {
+    return this.usersService.findAll(query);
   }
-  @Get(':id')
-  findOne(
-    @Param('id')
-    id: string
-  ) {
 
+  @RESPONSEMESSAGE("get user by id")
+  @Get(':id')
+  @Public()
+  findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
   }
 
-
-
   @Patch()
-  update(@Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(updateUserDto);
+  @RESPONSEMESSAGE("update a user")
+  update(@Body() updateUserDto: UpdateUserDto, @User() user:IUser) {
+    console.log(updateUserDto)
+    return this.usersService.update(updateUserDto,user);
   }
-
+  @RESPONSEMESSAGE("delete a user")
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  remove(@Param('id') id: string, @User() user:IUser) {
+    return this.usersService.remove(id,user);
   }
 }

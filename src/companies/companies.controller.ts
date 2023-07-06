@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Request, Query 
 import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
-import { User } from 'decorator/customize';
+import { RESPONSEMESSAGE, User } from 'decorator/customize';
 import { IUser } from '@/users/user.interface';
 
 @Controller('companies')
@@ -10,11 +10,13 @@ export class CompaniesController {
   constructor(private readonly companiesService: CompaniesService) {}
 
   @Post()
+  @RESPONSEMESSAGE("Created a company")
   create(@Body() createCompanyDto: CreateCompanyDto,@User() user:IUser) {
     return this.companiesService.create(createCompanyDto,user);
   }
 
   @Get()
+  @RESPONSEMESSAGE("fetch company with paginate")
   findAll(@Query() query:string) {
     return this.companiesService.findAll(query);
   }

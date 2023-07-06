@@ -9,11 +9,9 @@ import { ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './passport/stateless.jwt.strategy';
 
 import ms from 'ms';
-import { APP_GUARD } from '@nestjs/core';
-import { JwtAuthGuard } from './passport/stateless.jwt.auth.guard';
 @Module({
   controllers: [StatelessController],
-  providers: [StatelessService, LocalStrategy, JwtStrategy,],
+  providers: [StatelessService, LocalStrategy, JwtStrategy],
   imports: [UsersModule,
   PassportModule,
     // JwtModule.({
@@ -22,9 +20,9 @@ import { JwtAuthGuard } from './passport/stateless.jwt.auth.guard';
     // }),
     JwtModule.registerAsync({
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
+        secret: configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
         signOptions: {
-          expiresIn: ms(configService.get<string>("JWT_EXPIRED_IN")),
+          expiresIn: ms(configService.get<string>("JWT_ACCESS_TOKEN_EXPIRE"))/1000,
         },
       }),
       inject: [ConfigService],
