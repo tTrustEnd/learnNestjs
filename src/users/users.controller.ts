@@ -19,8 +19,12 @@ export class UsersController {
 
   @Get()
   @RESPONSEMESSAGE("get user with paginate")
-  findAll(@Query() query:string) {
-    return this.usersService.findAll(query);
+  findAll(
+    @Query() query: string,
+    @Query('current') currentPage: string,
+    @Query('pageSize') limit: string
+    ) {
+    return this.usersService.findAll(query,currentPage,limit);
   }
 
   @RESPONSEMESSAGE("get user by id")

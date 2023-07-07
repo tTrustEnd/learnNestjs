@@ -8,6 +8,8 @@ import { StatelessService } from './stateless/stateless.service';
 import { StatelessModule } from './stateless/stateless.module';
 import { softDeletePlugin } from 'soft-delete-plugin-mongoose';
 import { CompaniesModule } from './companies/companies.module';
+import { JobsModule } from './jobs/jobs.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { CompaniesModule } from './companies/companies.module';
     UsersModule,
     StatelessModule,
     CompaniesModule,
+    JobsModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

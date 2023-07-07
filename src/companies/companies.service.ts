@@ -24,17 +24,20 @@ export class CompaniesService {
       }
     });
   }
- async findAll(query:any) {
+ async findAll(query:any,currentPage:string,limit:string) {
+  console.log(query)
     let total = (await this.companyModel.find({})).length
-    let { limit, filter} = aqp(query)
-    delete filter.page
-    let offset = (query.page - 1) * limit
-    let result = await this.companyModel.find(filter).limit(limit).skip(offset).sort(query.sort);
+    let { filter} = aqp(query)
+    delete filter.current
+    delete filter.pageSize
+
+    let offset = (+currentPage - 1) * (+limit)
+    let result = await this.companyModel.find(filter).limit(+limit).skip(offset).sort(query.sort);
     return {
       meta: {
-        current: query.page,
+        current: +currentPage,
         pageSize:result.length,
-        pages:Math.ceil(total/limit),
+        pages:Math.ceil(total/(+limit)),
         total:total
       },
       result:result

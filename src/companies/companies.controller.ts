@@ -7,18 +7,22 @@ import { IUser } from '@/users/user.interface';
 
 @Controller('companies')
 export class CompaniesController {
-  constructor(private readonly companiesService: CompaniesService) {}
+  constructor(private readonly companiesService: CompaniesService) { }
 
   @Post()
   @RESPONSEMESSAGE("Created a company")
-  create(@Body() createCompanyDto: CreateCompanyDto,@User() user:IUser) {
-    return this.companiesService.create(createCompanyDto,user);
+  create(@Body() createCompanyDto: CreateCompanyDto, @User() user: IUser) {
+    return this.companiesService.create(createCompanyDto, user);
   }
 
   @Get()
   @RESPONSEMESSAGE("fetch company with paginate")
-  findAll(@Query() query:string) {
-    return this.companiesService.findAll(query);
+  findAll(
+    @Query() query: string,
+    @Query('current') currentPage: string,
+    @Query('pageSize') limit: string
+    ) {
+    return this.companiesService.findAll(query,currentPage,limit);
   }
 
   @Get(':id')
@@ -27,12 +31,12 @@ export class CompaniesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto, @User() user:IUser) {
-    return this.companiesService.update(id, updateCompanyDto,user);
+  update(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto, @User() user: IUser) {
+    return this.companiesService.update(id, updateCompanyDto, user);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string, @User() user:IUser) {
-    return this.companiesService.remove(id,user);
+  remove(@Param('id') id: string, @User() user: IUser) {
+    return this.companiesService.remove(id, user);
   }
 }

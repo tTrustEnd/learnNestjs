@@ -7,9 +7,8 @@ import mongoose, { Model } from 'mongoose';
 import { genSaltSync, hashSync, compareSync } from 'bcryptjs';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { IUser } from './user.interface';
-import { query } from 'express';
+import { Response } from 'express';
 import aqp from 'api-query-params';
-import { async } from 'rxjs';
 
 @Injectable()
 export class UsersService {
@@ -49,17 +48,18 @@ export class UsersService {
     return user;
   }
 
-  async findAll(query: any) {
+  async findAll(query: any,curentPage:string,limit:string) {
     let total = (await this.userModel.find({})).length
-    let { limit, filter } = aqp(query)
-    delete filter.page
-    let offset = (query.page - 1) * limit;
-    let result = await this.userModel.find(filter).limit(limit).skip(offset).sort(query.sort).select("-password");
+    let {filter } = aqp(query)
+    delete filter.current
+    delete filter.pageSize
+    let offset = (+curentPage- 1) * (+limit);
+    let result = await this.userModel.find(filter).limit(+limit).skip(offset).sort(query.sort).select("-password");
     return {
       meta: {
-        current: query.page,
+        current: +curentPage,
         pageSize: result.length,
-        pages: Math.ceil(total / limit),
+        pages: Math.ceil(total / (+limit)),
         total: total
       },
       result: result
@@ -137,5 +137,11 @@ export class UsersService {
     const user = await this.userModel.findOne({refreshToken})
     console.log(user)
     return await this.userModel.findOne({refreshToken})
+  }
+
+  logout = async(user:IUser, response:Response) =>{
+   await this.userModel.updateOne({_id:user._id},{refreshToken:null})
+   response.clearCookie("refresh_token")
+    return 'ok'
   }
 }

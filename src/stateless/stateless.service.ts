@@ -8,7 +8,7 @@ import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { UserDocument } from '@/users/schemas/user.schema';
 import { ConfigService } from '@nestjs/config';
 import ms from 'ms';
-import { Response, response } from 'express';
+import { Response } from 'express';
 import { async } from 'rxjs';
 @Injectable()
 export class StatelessService {
@@ -59,10 +59,14 @@ export class StatelessService {
             }
         };
     }
+
+
     async register(user: RegisterUserDto) {
         return this.usersService.register(user);
 
     }
+
+    
     createRefreshToken = (payload: any) => {
         const refresh_token = this.jwtService.sign(payload, {
             secret: this.ConfigService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
@@ -70,6 +74,7 @@ export class StatelessService {
         })
         return refresh_token
     }
+
     processRefreshToken = async (refreshToken: string,response:Response) => {
         console.log(refreshToken)
         try {
@@ -77,7 +82,6 @@ export class StatelessService {
                 secret: this.ConfigService.get<string>('JWT_REFRESH_TOKEN_SECRET')
             })
            let user = await this.usersService.findUserByRefreshToken(refreshToken)
-           console.log(user)
            if(user){
             const { _id, name, email, role } = user;
         const payload = {
@@ -112,5 +116,9 @@ export class StatelessService {
         } catch (error) {
             throw new BadRequestException("Token hết hạn hoặc không hợp lệ vui lòng login")
         }
+    }
+
+    logout = (user:IUser,response:Response) =>{
+        return this.usersService.logout(user,response)
     }
 }
