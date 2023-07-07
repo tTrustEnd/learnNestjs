@@ -10,8 +10,8 @@ import cookieParser = require('cookie-parser');
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get(ConfigService);
-  app.useStaticAssets(join(__dirname, '..', 'public')); //js, css, images
-  app.setBaseViewsDir(join(__dirname, '..', 'views')); //view 
+  app.useStaticAssets(join(__dirname,'..', '../public'))
+  app.setBaseViewsDir(join(__dirname, '..', './views')); //view 
   app.setViewEngine('ejs');
 
   app.useGlobalPipes(new ValidationPipe());

@@ -17,6 +17,7 @@ export class JobsController {
   }
 
   @Get()
+  @Public()
   @RESPONSEMESSAGE("get job with paginate")
   findAll(
     @Query() query: any,
@@ -28,6 +29,7 @@ export class JobsController {
 
   @Get(':id')
   @RESPONSEMESSAGE("get a job by id")
+  @Public()
   findOne(@Param('id') id: string) {
     return this.jobsService.findOne(id);
   }

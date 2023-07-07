@@ -1,4 +1,4 @@
-import { Injectable, Delete } from '@nestjs/common';
+import { Injectable, Delete, BadRequestException } from '@nestjs/common';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -7,6 +7,7 @@ import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { IUser } from '@/users/user.interface';
 import { query } from 'express';
 import aqp from 'api-query-params';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class CompaniesService {
@@ -15,8 +16,8 @@ export class CompaniesService {
     private companyModel: SoftDeleteModel<CompanyDocument>
   ) { }
 
-  create(createCompanyDto: CreateCompanyDto, user: IUser) {
-    return this.companyModel.create({
+ async create(createCompanyDto: CreateCompanyDto, user: IUser) {
+    return await this.companyModel.create({
       ...createCompanyDto,
       createdBy: {
         _id: user._id,
@@ -44,8 +45,10 @@ export class CompaniesService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} company`;
+  findOne(id: string) {
+    if(!mongoose.Types.ObjectId.isValid(id))
+    throw new BadRequestException('not found company')
+    return this.companyModel.findOne({_id:id});
   }
 
   async update(id: string, updateCompanyDto: UpdateCompanyDto, user: IUser) {

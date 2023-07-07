@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Request, Query 
 import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
-import { RESPONSEMESSAGE, User } from 'decorator/customize';
+import { Public, RESPONSEMESSAGE, User } from 'decorator/customize';
 import { IUser } from '@/users/user.interface';
 
 @Controller('companies')
@@ -16,6 +16,7 @@ export class CompaniesController {
   }
 
   @Get()
+  @Public()
   @RESPONSEMESSAGE("fetch company with paginate")
   findAll(
     @Query() query: string,
@@ -26,8 +27,9 @@ export class CompaniesController {
   }
 
   @Get(':id')
+  @Public()
   findOne(@Param('id') id: string) {
-    return this.companiesService.findOne(+id);
+    return this.companiesService.findOne(id);
   }
 
   @Patch(':id')

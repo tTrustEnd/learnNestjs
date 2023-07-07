@@ -14,12 +14,19 @@ export class Job {
     @Prop({ type: Object })
     company: {
         _id: mongoose.Schema.Types.ObjectId,
-        name: string
+        name: string,
+        logo: string;
+    
     };
+    @Prop()
+    location: string;
+
+    @Prop()
+    logo: string;
 
     @Prop()
     salary: number;
-
+    
     @Prop()
     quantity: number;
 
