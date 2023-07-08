@@ -73,7 +73,6 @@ export class ResumesService {
   }
 
   async findAll(query: any, currentPage: string, limit: string) {
-    console.log(query)
     let total = (await this.resumeModel.find({})).length
     let { filter,population,projection } = aqp(query)
     delete filter.current
