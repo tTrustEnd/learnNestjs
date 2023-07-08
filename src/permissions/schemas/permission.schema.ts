@@ -12,7 +12,7 @@ export class Permission {
     @Prop()
     name: string;
 
-    @Prop({ ref:User.name})
+    @Prop()
     apiPath: string;
 
     @Prop()

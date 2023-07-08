@@ -1,4 +1,4 @@
-import { BadGatewayException, Injectable } from '@nestjs/common';
+import { BadGatewayException, BadRequestException, Injectable } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { IUser } from '@/users/user.interface';
@@ -71,6 +71,10 @@ export class RolesService {
  async remove(id: string,user:IUser) {
     if(!mongoose.Types.ObjectId.isValid(id))
     throw new BadGatewayException("not found role")
+
+    const foudUser = await this.roleModel.findById({_id:id})
+    if (foudUser.name === "ADMIN")
+     { throw new BadRequestException(`Không thể xóa role ${foudUser.name}`)}
     await this.roleModel.updateOne({_id:id},{deletedBy:{
       _id:user._id,
       email:user.email

@@ -74,7 +74,7 @@ export class ResumesService {
 
   async findAll(query: any, currentPage: string, limit: string) {
     let total = (await this.resumeModel.find({})).length
-    let { filter,population,projection } = aqp(query)
+    let { filter, population, projection } = aqp(query)
     delete filter.current
     delete filter.pageSize
 
@@ -106,8 +106,8 @@ export class ResumesService {
         _id: user._id,
         email: user.email
       },
-      $push:{
-        history:{
+      $push: {
+        history: {
           status: updateresumeDto.status,
           updatedAt: new Date,
           updatedBy: {
@@ -116,7 +116,7 @@ export class ResumesService {
           }
         }
       }
-    
+
     });
   }
 
@@ -132,6 +132,15 @@ export class ResumesService {
     return await this.resumeModel.softDelete({ _id: id });
   }
   getCVbyUser = async (user: IUser) => {
-    return this.resumeModel.find({ createdBy: { _id: user._id, email: user.email } })
+    return this.resumeModel.find({ createdBy: { _id: user._id, email: user.email } }).sort("-createdAt")
+      .populate([
+        {
+          path: 'companyId',
+          select: { name: 1 }
+        },
+        {
+          path: 'jobId',
+          select: { name: 1 }
+        }])
   }
 }

@@ -12,7 +12,7 @@ export class Role {
     @Prop()
     name: string;
 
-    @Prop({ ref:User.name})
+    @Prop()
     description: string;
 
     @Prop()

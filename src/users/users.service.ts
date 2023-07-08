@@ -48,12 +48,12 @@ export class UsersService {
     return user;
   }
 
-  async findAll(query: any,curentPage:string,limit:string) {
+  async findAll(query: any, curentPage: string, limit: string) {
     let total = (await this.userModel.find({})).length
-    let {filter } = aqp(query)
+    let { filter } = aqp(query)
     delete filter.current
     delete filter.pageSize
-    let offset = (+curentPage- 1) * (+limit);
+    let offset = (+curentPage - 1) * (+limit);
     let result = await this.userModel.find(filter).limit(+limit).skip(offset).sort(query.sort).select("-password");
     return {
       meta: {
@@ -73,14 +73,17 @@ export class UsersService {
     let result = await this.userModel.findOne({
       _id: id,
     }
-    ).select("-password")
+    ).select("-password").populate([
+      {path:'role',select:{name:1, description:1,permissions:1}}
+    
+    ])
     return result
   }
 
   async findOneByUsername(username: string) {
     return await this.userModel.findOne({
       email: username
-    })
+    }).populate( {path:'role',select:{name:1, permissions:1}})
   }
 
 
@@ -98,15 +101,22 @@ export class UsersService {
   }
 
   async remove(id: string, user: IUser) {
-    if (!mongoose.Types.ObjectId.isValid(id))
-      return `not found user`;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestException(`Không tìm thấy ai cả`)
+    }
+    const foudUser = await this.userModel.findById({ _id: id })
+    if (foudUser.role === "ADMIN") { throw new BadRequestException(`Không thể xóa người dùng role là ${foudUser.role}`) }
 
+    if (user.role === 'user' || 'hr') {
+      throw new BadRequestException(`Bạn không có quyền này`)
+    }
     return await this.userModel.updateOne({
       _id: id,
       isDeleted: true,
       deletedBy: user
     })
   }
+
   async register(user: RegisterUserDto) {
     const hashPassword = this.getHashPassword(user.password)
     const newUser = await this.userModel.findOne({ email: user.email })
@@ -133,15 +143,15 @@ export class UsersService {
     )
   }
 
-  findUserByRefreshToken = async(refreshToken:string) => {
-    const user = await this.userModel.findOne({refreshToken})
+  findUserByRefreshToken = async (refreshToken: string) => {
+    const user = await this.userModel.findOne({ refreshToken })
     console.log(user)
-    return await this.userModel.findOne({refreshToken})
+    return await this.userModel.findOne({ refreshToken })
   }
 
-  logout = async(user:IUser, response:Response) =>{
-   await this.userModel.updateOne({_id:user._id},{refreshToken:null})
-   response.clearCookie("refresh_token")
+  logout = async (user: IUser, response: Response) => {
+    await this.userModel.updateOne({ _id: user._id }, { refreshToken: null })
+    response.clearCookie("refresh_token")
     return 'ok'
   }
 }
