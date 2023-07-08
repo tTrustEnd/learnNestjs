@@ -39,7 +39,7 @@ export class User {
         name: string
     };
 
-    @Prop({ ref:Role.name,default:'user'})
+    @Prop({ ref:Role.name})
     role: string
 
     @Prop({ type: Object })

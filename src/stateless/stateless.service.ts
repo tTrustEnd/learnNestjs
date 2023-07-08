@@ -10,12 +10,15 @@ import { ConfigService } from '@nestjs/config';
 import ms from 'ms';
 import { Response } from 'express';
 import { async } from 'rxjs';
+import { RolesService } from './../roles/roles.service';
 @Injectable()
 export class StatelessService {
     constructor(
         private usersService: UsersService,
         private jwtService: JwtService,
-        private ConfigService: ConfigService
+        private ConfigService: ConfigService,
+        private rolesService: RolesService
+
     ) { }
 
     async validateUserStateless(username: string, pass: string): Promise<any> {
@@ -23,16 +26,25 @@ export class StatelessService {
         const user = await this.usersService.findOneByUsername(username);
         if (!user) {
             return null;
-        }
+        }   
         const isValidPassword = this.usersService.isValidPassword(pass, user.password);
         if (!isValidPassword) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException("Sai ");
         }
-        return user;
+        if(isValidPassword===true){
+            const userRole = user.role as unknown as {_id:string; name:string}
+            const temp = await this.rolesService.findOne(userRole._id)
+            const objUser = {
+                ...user.toObject(),
+                permissions:temp?.permissions?? []
+            }
+            return objUser
+        }
+   
     }
 
     async login(user: IUser, response: Response) {
-        const { _id, name, email, role } = user;
+        const { _id, name, email, role,permissions } = user;
         const payload = {
             sub: "token login",
             iss: "from server",
@@ -55,7 +67,8 @@ export class StatelessService {
                 _id,
                 name,
                 email,
-                role
+                role,
+                permissions,
             }
         };
     }
@@ -76,7 +89,6 @@ export class StatelessService {
     }
 
     processRefreshToken = async (refreshToken: string,response:Response) => {
-        console.log(refreshToken)
         try {
           this.jwtService.verify(refreshToken, {
                 secret: this.ConfigService.get<string>('JWT_REFRESH_TOKEN_SECRET')
@@ -100,13 +112,16 @@ export class StatelessService {
         })
         //cần setup http only ở postman = true để chỉ server lấy được thôi chứ không cho client dùng javascrip để lấy
         await this.usersService.updateUserToken(refresh_token, _id.toString())
+        const userRole = user.role as unknown as {_id:string; name:string}
+        const temp = await this.rolesService.findOne(userRole._id)
         return {
             access_token: this.jwtService.sign(payload),
             user: {
                 _id,
                 name,
                 email,
-                role
+                role,
+                permissions:temp?.permissions?? []
             }
         };
            }else{

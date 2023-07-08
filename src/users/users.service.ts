@@ -9,13 +9,18 @@ import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { IUser } from './user.interface';
 import { Response } from 'express';
 import aqp from 'api-query-params';
+import { Role, RoleDocument } from '@/roles/schemas/role.schema';
+import { USER_ROLE } from '@/databases/sample';
 
 @Injectable()
 export class UsersService {
 
   constructor(
     @InjectModel(User.name)
-    private userModel: SoftDeleteModel<UserDocument>
+    private userModel: SoftDeleteModel<UserDocument>,
+
+    @InjectModel(Role.name)
+    private roleModel: SoftDeleteModel<RoleDocument>
   ) { }
 
   getHashPassword = (password: string) => {
@@ -83,7 +88,7 @@ export class UsersService {
   async findOneByUsername(username: string) {
     return await this.userModel.findOne({
       email: username
-    }).populate( {path:'role',select:{name:1, permissions:1}})
+    }).populate( {path:'role',select:{name:1}})
   }
 
 
@@ -107,9 +112,7 @@ export class UsersService {
     const foudUser = await this.userModel.findById({ _id: id })
     if (foudUser.role === "ADMIN") { throw new BadRequestException(`Không thể xóa người dùng role là ${foudUser.role}`) }
 
-    if (user.role === 'user' || 'hr') {
-      throw new BadRequestException(`Bạn không có quyền này`)
-    }
+
     return await this.userModel.updateOne({
       _id: id,
       isDeleted: true,
@@ -123,6 +126,7 @@ export class UsersService {
     if (newUser) {
       throw new BadRequestException(`Email: ${user.email} đã tồn tại trên hệ thống`)
     }
+    const userRole = await this.roleModel.findOne({name:USER_ROLE})
     const result = await this.userModel.create({
       name: user.name,
       email: user.email,
@@ -130,6 +134,7 @@ export class UsersService {
       age: user.age,
       gender: user.gender,
       address: user.address,
+      role:userRole?._id
     })
     return {
       _id: result?._id,
@@ -146,7 +151,7 @@ export class UsersService {
   findUserByRefreshToken = async (refreshToken: string) => {
     const user = await this.userModel.findOne({ refreshToken })
     console.log(user)
-    return await this.userModel.findOne({ refreshToken })
+    return (await this.userModel.findOne({ refreshToken })).populate({path:"role",select:{name:1}})
   }
 
   logout = async (user: IUser, response: Response) => {

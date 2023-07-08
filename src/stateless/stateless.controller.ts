@@ -6,9 +6,13 @@ import { Public, RESPONSEMESSAGE, User } from 'decorator/customize';
 import { RegisterUserDto } from '@/users/dto/create-user.dto';
 import { Request, Response } from 'express';
 import { IUser } from '@/users/user.interface';
+import { RolesService } from './../roles/roles.service';
 @Controller('auth')
 export class StatelessController {
-    constructor(private statelessService: StatelessService,) { }
+    constructor(
+        private statelessService: StatelessService,
+        private rolesService: RolesService
+        ) { }
     @UseGuards(LocalAuthGuard)
     @Public()
     @RESPONSEMESSAGE('Login')
@@ -21,7 +25,9 @@ export class StatelessController {
     @UseGuards(JwtAuthGuard)
     @RESPONSEMESSAGE("get user info")
     @Get('account')
-    getProfile(@User() user:IUser) {
+   async getProfile(@User() user:IUser) {
+        const temp = await this.rolesService.findOne(user.role._id) as any;
+        user.permissions=temp.permissions
         return {user};
     }
 
