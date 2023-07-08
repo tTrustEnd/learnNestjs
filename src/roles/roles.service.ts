@@ -51,10 +51,11 @@ export class RolesService {
   }
 
  async findOne(id: string) {
+  console.log(id)
     if(!mongoose.Types.ObjectId.isValid(id))
     throw new BadGatewayException("not found role")
     
-    return (await this.roleModel.findById({_id:id})).populate({
+   return await this.roleModel.findById({_id:id}).populate({
     path: "permissions",
     select: { _id: 1, apiPath: 1, name: 1, method: 1, module: 1 }
     });

@@ -79,8 +79,8 @@ export class UsersService {
       _id: id,
     }
     ).select("-password").populate([
-      {path:'role',select:{name:1, description:1,permissions:1}}
-    
+      { path: 'role', select: { name: 1, description: 1, permissions: 1 } }
+
     ])
     return result
   }
@@ -88,7 +88,7 @@ export class UsersService {
   async findOneByUsername(username: string) {
     return await this.userModel.findOne({
       email: username
-    }).populate( {path:'role',select:{name:1}})
+    }).populate({ path: 'role', select: { name: 1 } })
   }
 
 
@@ -112,9 +112,9 @@ export class UsersService {
     const foudUser = await this.userModel.findById({ _id: id })
     if (foudUser.role === "ADMIN") { throw new BadRequestException(`Không thể xóa người dùng role là ${foudUser.role}`) }
 
-
     return await this.userModel.updateOne({
-      _id: id,
+      _id: id
+    }, {
       isDeleted: true,
       deletedBy: user
     })
@@ -126,7 +126,7 @@ export class UsersService {
     if (newUser) {
       throw new BadRequestException(`Email: ${user.email} đã tồn tại trên hệ thống`)
     }
-    const userRole = await this.roleModel.findOne({name:USER_ROLE})
+    const userRole = await this.roleModel.findOne({ name: USER_ROLE })
     const result = await this.userModel.create({
       name: user.name,
       email: user.email,
@@ -134,7 +134,7 @@ export class UsersService {
       age: user.age,
       gender: user.gender,
       address: user.address,
-      role:userRole?._id
+      role: userRole?._id
     })
     return {
       _id: result?._id,
@@ -151,7 +151,7 @@ export class UsersService {
   findUserByRefreshToken = async (refreshToken: string) => {
     const user = await this.userModel.findOne({ refreshToken })
     console.log(user)
-    return (await this.userModel.findOne({ refreshToken })).populate({path:"role",select:{name:1}})
+    return (await this.userModel.findOne({ refreshToken })).populate({ path: "role", select: { name: 1 } })
   }
 
   logout = async (user: IUser, response: Response) => {

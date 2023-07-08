@@ -13,8 +13,8 @@ export class StatelessController {
         private statelessService: StatelessService,
         private rolesService: RolesService
         ) { }
-    @UseGuards(LocalAuthGuard)
     @Public()
+    @UseGuards(LocalAuthGuard)
     @RESPONSEMESSAGE('Login')
     @Post('login')
     async login(@Req() req,@Res({ passthrough: true }) response: Response) {
@@ -22,16 +22,14 @@ export class StatelessController {
         return this.statelessService.login(req.user,response);
     }
 
-    @UseGuards(JwtAuthGuard)
     @RESPONSEMESSAGE("get user info")
     @Get('account')
    async getProfile(@User() user:IUser) {
         const temp = await this.rolesService.findOne(user.role._id) as any;
-        user.permissions=temp.permissions
+        user.permissions=temp.permissions.toObject()
         return {user};
     }
 
-    @UseGuards(JwtAuthGuard)
     @RESPONSEMESSAGE("get user info")
     @Public()
     @Get('refresh')
@@ -45,7 +43,6 @@ export class StatelessController {
     async register(@Body() user:RegisterUserDto) {
         return this.statelessService.register(user);
     }
-    @UseGuards(JwtAuthGuard)
     @RESPONSEMESSAGE("Logout User")
     @Post('logout')
     logout(@User() user:IUser, @Res({ passthrough: true }) response: Response) {

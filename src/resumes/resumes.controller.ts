@@ -44,8 +44,8 @@ export class ResumesController {
     return this.ResumesService.remove(id, user);
   }
 
-  @Post('/by-user')
-  @RESPONSEMESSAGE("get resume by user")
+  @Post('by-user')
+  @RESPONSEMESSAGE("get CV by user")
   getCVbyUser(@User() user: IUser) {
     return this.ResumesService.getCVbyUser(user);
   }

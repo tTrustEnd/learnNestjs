@@ -1,7 +1,8 @@
-import { ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { IS_PUBLIC_KEY } from 'decorator/customize'; 
+import { IS_PUBLIC_KEY } from 'decorator/customize';
 import { Reflector } from '@nestjs/core';
+import { Request } from 'express';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -21,11 +22,25 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     }
 
 
-    handleRequest(err, user, info) {
+    handleRequest(err, user, info, context: ExecutionContext) {
+        const request: Request = context.switchToHttp().getRequest();
         // You can throw an exception based on either "info" or "err" arguments
         if (err || !user) {
             throw err || new UnauthorizedException("Token không hợp lệ hoặc không có bearer token");
         }
-        return user;
+        const targetMethod = request.method
+        const targetMethodEnpoint = request.route?.path
+        if (targetMethod === "GET" && targetMethodEnpoint === "/api/v1/auth/account" ||
+            targetMethod === "POST" && targetMethodEnpoint === "/api/v1/auth/logout"
+        ) {
+            return user
+        }
+        const permissions = user?.permissions ?? []
+        const isExit = permissions.find(permissions => targetMethod === permissions.method
+            && targetMethodEnpoint === permissions.apiPath
+        )
+        if (!isExit)
+            throw new ForbiddenException("Bạn không có quyền truy cập enpoint này")
+        return user
     }
 }
