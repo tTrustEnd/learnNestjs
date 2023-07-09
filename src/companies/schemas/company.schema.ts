@@ -20,8 +20,8 @@ export class Company {
     @Prop()
     updatedAt: Date;
 
-    @Prop()
-    isDeleted: Boolean
+    // @Prop()
+    // isDeleted: Boolean
 
     @Prop()
     logo: string

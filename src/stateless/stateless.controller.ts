@@ -18,7 +18,6 @@ export class StatelessController {
     @RESPONSEMESSAGE('Login')
     @Post('login')
     async login(@Req() req,@Res({ passthrough: true }) response: Response) {
-        console.log(req)
         return this.statelessService.login(req.user,response);
     }
 

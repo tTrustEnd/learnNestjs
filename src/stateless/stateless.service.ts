@@ -79,7 +79,7 @@ export class StatelessService {
 
     }
 
-    
+    ///
     createRefreshToken = (payload: any) => {
         const refresh_token = this.jwtService.sign(payload, {
             secret: this.ConfigService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
@@ -88,6 +88,7 @@ export class StatelessService {
         return refresh_token
     }
 
+    ///
     processRefreshToken = async (refreshToken: string,response:Response) => {
         try {
           this.jwtService.verify(refreshToken, {
