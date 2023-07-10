@@ -1,6 +1,6 @@
 import { ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { IS_PUBLIC_KEY } from 'decorator/customize';
+import { IS_PUBLIC_KEY, IS_PUBLIC_PERMISSION } from 'decorator/customize';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 
@@ -35,13 +35,16 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         // ) {
         //     return user
         // }
-
+        const isSkipPermission = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_PERMISSION, [
+            context.getHandler(),
+            context.getClass(),
+        ]);
         const permissions = user?.permissions ?? []
         let isExit = permissions.find(permissions => targetMethod === permissions.method
             && targetMethodEnpoint === permissions.apiPath
         )
         if (targetMethodEnpoint.startsWith('/api/v1/auth'))  isExit = true; 
-        if (!isExit)
+        if (!isExit || !isSkipPermission)
             throw new ForbiddenException("Bạn không có quyền truy cập enpoint này")
         return user
     }

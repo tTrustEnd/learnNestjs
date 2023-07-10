@@ -7,15 +7,18 @@ import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { JwtAuthGuard } from './stateless/passport/stateless.jwt.auth.guard';
 import { TransformInterceptor } from './core/transform.interceptor';
 import cookieParser = require('cookie-parser');
+
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get(ConfigService);
   app.useStaticAssets(join(__dirname,'..', '../public'))
   app.setBaseViewsDir(join(__dirname, '..', 'views')); //view 
   app.setViewEngine('ejs');
-
-  app.useGlobalPipes(new ValidationPipe());
-
+  
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    // forbidNonWhitelisted: true
+    }));
   const reflector = app.get(Reflector)
   app.useGlobalGuards(new JwtAuthGuard(reflector))
   app.useGlobalInterceptors(new TransformInterceptor(reflector));
@@ -27,6 +30,8 @@ async function bootstrap() {
     "optionsSuccessStatus": 204,
     credentials:true
     });
+
+  
 
   app.use(cookieParser())
 

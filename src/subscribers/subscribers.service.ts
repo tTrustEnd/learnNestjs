@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateSubscriberDto } from './dto/create-subscriber.dto';
 import { UpdateSubscriberDto } from './dto/update-subscriber.dto';
 import { IUser } from '@/users/user.interface';
-import { Subscriber, SubscriberDocument,  } from './schemas/Subscriber.schema';
+import { Subscriber, SubscriberDocument, } from './schemas/Subscriber.schema';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import aqp from 'api-query-params';
@@ -56,12 +56,14 @@ export class SubscribersService {
   async update(id: string, updateSubscriberDto: UpdateSubscriberDto, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(id))
       return 'not found Subscriber'
-    return await this.subscriberModel.updateOne({ _id: id }, {
+    return await this.subscriberModel.updateOne({ email: user.email }, {
       ...updateSubscriberDto, updatedBy: {
         _id: user._id,
         email: user.email
       }
-    });
+    }
+      , { upsert: true }
+    );
   }
 
   async remove(id: string, user: IUser) {
@@ -74,5 +76,9 @@ export class SubscribersService {
       }
     });
     return await this.subscriberModel.softDelete({ _id: id })
+  }
+  async getSkills(user:IUser){
+    const {email} = user;
+    return await this.subscriberModel.findOne({email},{skills:1})
   }
 }

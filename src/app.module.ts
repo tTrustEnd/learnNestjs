@@ -16,10 +16,11 @@ import { RolesModule } from './roles/roles.module';
 import { DatabasesModule } from './databases/databases.module';
 import { SubscribersModule } from './subscribers/subscribers.module';
 import { MailModule } from './mail/mail.module';
-
+import { ScheduleModule } from '@nestjs/schedule';
 @Module({
   imports: [
     // MongooseModule.forRoot('mongodb+srv://hoidanit:Z9bUEB7sNoatKG0j@cluster0.ls1fl27.mongodb.net/'),
+    ScheduleModule.forRoot(),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -47,6 +48,7 @@ import { MailModule } from './mail/mail.module';
     DatabasesModule,
     SubscribersModule,
     MailModule,
+    ScheduleModule
   ],
   controllers: [AppController],
   providers: [AppService],

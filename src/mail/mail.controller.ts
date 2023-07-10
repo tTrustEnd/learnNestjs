@@ -6,6 +6,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Subscriber, SubscriberDocument } from '@/subscribers/schemas/Subscriber.schema';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { Job, JobDocument } from '@/jobs/schemas/job.schema';
+import { Cron, CronExpression } from '@nestjs/schedule';
+
 @Controller('mail')
 export class MailController {
   constructor(private readonly mailService: MailService,
@@ -17,9 +19,8 @@ export class MailController {
   @Get()
   @Public()
   @RESPONSEMESSAGE("Test email")
-
+  @Cron('0 0 * * SUN')
   async handleTestEmail() {
-
     const Subscriber = await this.subscriberModel.find({})
     for (const SubscriberSkills of Subscriber) {
       const jobSkills = SubscriberSkills.skills

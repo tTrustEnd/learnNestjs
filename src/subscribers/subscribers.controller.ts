@@ -3,7 +3,7 @@ import { SubscribersService } from './subscribers.service';
 import { CreateSubscriberDto } from './dto/create-subscriber.dto';
 import { UpdateSubscriberDto } from './dto/update-subscriber.dto';
 import { IUser } from '@/users/user.interface';
-import { Public, RESPONSEMESSAGE, User } from 'decorator/customize';
+import { Public, RESPONSEMESSAGE, SkipCheckPermission, User } from 'decorator/customize';
 
 @Controller('subscribers')
 export class SubscribersController {
@@ -28,7 +28,7 @@ export class SubscribersController {
 
   @Get(':id')
   @RESPONSEMESSAGE("get a Subscriber by id")
-  @Public()
+  @SkipCheckPermission()
   findOne(@Param('id') id: string) {
     return this.subscribersService.findOne(id);
   }
