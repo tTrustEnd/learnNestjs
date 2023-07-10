@@ -2,8 +2,8 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateSubscriberDto } from './dto/create-subscriber.dto';
 import { UpdateSubscriberDto } from './dto/update-subscriber.dto';
 import { IUser } from '@/users/user.interface';
-import { Subscriber, SubscriberDocument } from './schemas/Subscriber.schema';
-import { SoftDeleteModel, softDeletePlugin } from 'soft-delete-plugin-mongoose';
+import { Subscriber, SubscriberDocument,  } from './schemas/Subscriber.schema';
+import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import aqp from 'api-query-params';
 import mongoose from 'mongoose';
@@ -16,16 +16,10 @@ export class SubscribersService {
   ) { }
 
   async create(createSubscriberDto: CreateSubscriberDto, user: IUser) {
-    const isExis = await this.subscriberModel.findOne({email:createSubscriberDto.email})
-    if(isExis){
-      throw new BadRequestException(`Email: ${createSubscriberDto.email} đã tồn tại trên hệ thống`)
-    }
+
     const newSubscriber = await this.subscriberModel.create({
       ...createSubscriberDto,
-      createdBy: {
-        _id: user._id,
-        email: user.email
-      }
+      email: user.email
     }
     );
     return {
@@ -73,12 +67,12 @@ export class SubscribersService {
   async remove(id: string, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(id))
       return 'not found Subscriber'
-     await this.subscriberModel.updateOne({ _id: id }, {
+    await this.subscriberModel.updateOne({ _id: id }, {
       isDeleted: true, deletedBy: {
         _id: user._id,
         email: user.email,
       }
     });
-    return await this.subscriberModel.softDelete({_id: id})
+    return await this.subscriberModel.softDelete({ _id: id })
   }
 }

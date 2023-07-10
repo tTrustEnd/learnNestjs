@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { softDeletePlugin } from 'soft-delete-plugin-mongoose';
 
 export type SubscriberDocument = HydratedDocument<Subscriber>;
 
@@ -41,4 +40,4 @@ export class Subscriber {
     updatedAt: Date
 }
 
-export const SubscriberSchema = SchemaFactory.createForClass(Subscriber).plugin(softDeletePlugin);
+export const SubscriberSchema = SchemaFactory.createForClass(Subscriber)
