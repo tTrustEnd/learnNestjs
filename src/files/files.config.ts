@@ -3,6 +3,8 @@ import { MulterModuleOptions, MulterOptionsFactory } from "@nestjs/platform-expr
 import fs from 'fs'
 import { diskStorage } from "multer";
 import path, { join } from "path";
+import { HttpException } from "@nestjs/common/exceptions";
+import { HttpStatus } from "@nestjs/common/enums";
 @Injectable()
 export class MulterConfigService implements MulterOptionsFactory {
   getRootPath = () => {
@@ -48,7 +50,22 @@ export class MulterConfigService implements MulterOptionsFactory {
           let finalName = `${baseName}-${Date.now()}${extName}`
           cb(null, finalName)
         }
-      })
+        
+      }),
+      fileFilter: (req, file, cb) => {
+        const allowedFileTypes = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx'];
+        const fileExtension = file.originalname.split('.').pop().toLowerCase();
+        const isValidFileType = allowedFileTypes.includes(fileExtension);
+        if (!isValidFileType) {
+        cb(new HttpException('Invalid file type', HttpStatus.UNPROCESSABLE_ENTITY), null);
+        } else
+        cb(null, true);
+        },
+        limits: {
+        fileSize: 1024 * 1024 * 1 // 1MB
+        }
+        };
     };
   }
-}
+  
+

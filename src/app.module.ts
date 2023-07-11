@@ -17,6 +17,10 @@ import { DatabasesModule } from './databases/databases.module';
 import { SubscribersModule } from './subscribers/subscribers.module';
 import { MailModule } from './mail/mail.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { HealthController } from './health/health.controller';
+import { HealthModule } from './health/health.module';
+
 @Module({
   imports: [
     // MongooseModule.forRoot('mongodb+srv://hoidanit:Z9bUEB7sNoatKG0j@cluster0.ls1fl27.mongodb.net/'),
@@ -32,7 +36,10 @@ import { ScheduleModule } from '@nestjs/schedule';
       }),
       inject: [ConfigService],
     }),
-
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 2,
+    }),
     ConfigModule.forRoot({
       isGlobal: true
     }),
@@ -48,9 +55,11 @@ import { ScheduleModule } from '@nestjs/schedule';
     DatabasesModule,
     SubscribersModule,
     MailModule,
-    ScheduleModule
+    ScheduleModule,
+    HealthModule
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule { }
+ 

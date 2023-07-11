@@ -7,13 +7,19 @@ import { LocalStrategy } from './passport/stateless.local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './passport/stateless.jwt.strategy';
-
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import ms from 'ms';
 import { RolesService } from '@/roles/roles.service';
 import { RolesModule } from '@/roles/roles.module';
 @Module({
   controllers: [StatelessController],
-  providers: [StatelessService, LocalStrategy, JwtStrategy],
+  providers: [StatelessService, LocalStrategy, JwtStrategy,
+  //   {
+  //   provide: APP_GUARD,
+  //   useClass: ThrottlerGuard,
+  // },
+],
   imports: [UsersModule,RolesModule,
   PassportModule,
     // JwtModule.({
@@ -29,7 +35,8 @@ import { RolesModule } from '@/roles/roles.module';
       }),
       inject: [ConfigService],
     }),
-
+   
+    
   ]
 })
 export class StatelessModule { }
